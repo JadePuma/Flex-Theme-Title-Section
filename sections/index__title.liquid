@@ -1,0 +1,312 @@
+{% comment %}
+** Heading **
+{% endcomment %}
+
+{%- assign title = section.settings.title -%}
+
+{% comment %} Section specific CSS {% endcomment %}
+
+{%- assign background_alpha = section.settings.background | color_extract: 'alpha' -%}
+
+{% style %}
+  #shopify-section-{{ section.id }} {
+    padding-top: {{ section.settings.padding_top }}px;
+    padding-bottom: {{ section.settings.padding_bottom }}px;
+    padding-left: {{ section.settings.padding_left }}px;
+    padding-right: {{ section.settings.padding_right }}px;
+    {% if section.settings.width == 'wide' -%}
+      width: 100%;
+    {%- elsif section.settings.width == 'half' -%}
+      width: 50%;
+    {%- endif %}
+  }
+  
+  .title-section { background-color: {%- if background_alpha != 0 -%}{{ section.settings.background }}{%- endif -%}; }
+  
+  .title-section .heading-section__content { min-height: {{ section.settings.desktop-min }}px; justify-content: center; }
+
+  @media only screen and (min-width: 799px) {
+  .title-section { min-height: {{ section.settings.desktop-min }}px; }
+  .title-section .heading-section__content { min-height: {{ section.settings.desktop-min }}px; }
+  }
+  @media only screen and (max-width: 798px) {
+  .title-section { min-height: {{ section.settings.mobile-min }}px; }
+  .title-section .heading-section__content { min-height: {{ section.settings.mobile-min }}px; }
+  }
+  
+  {% render 'css-loop',
+          css: section_css,
+          id: section.id
+  %}
+  {% render 'css-loop',
+          css: section.settings.custom_css,
+          id: section.id
+  %}
+{% endstyle %}
+
+{% comment %} HTML markup {% endcomment %}
+  <section class="section title-section
+                  {{ section.settings.css_class }}
+                  is-width-{{ section.settings.width }}
+                  "
+            data-section-id="{{ section.id }}"
+            {% if section.settings.animation != "none" %}
+              data-scroll-class="{{ section.settings.animation }}"
+            {% endif %}>
+    <div class="container
+                ">
+      <div class="one-whole column">
+        <div class="heading-section__content
+                    is-flex
+                    is-flex-column
+                    is-align-{{ section.settings.heading_alignment }}
+                    text-align-{{ section.settings.heading_alignment }}
+                    vertical-spacing-{{ section.settings.vertical_spacing }}">
+
+            <h1 class="heading-section__heading title">
+              {% if section.settings.title != blank %}
+                {{ section.settings.title }}
+              {% elsif template.name == 'page' %}
+                {{ page.title }}
+                {% elsif template.name == 'collection' %}
+                {{ collection.title }}
+                {% elsif template.name == 'product' %}
+                {{ product.title }}
+                {% endif %}
+            </h1>
+
+          {% if settings.display_heading_divider == true and section.settings.hide-divider == false %}
+            <div class="heading-divider
+                      heading-divider--{{ settings.heading_divider_style }}"
+                  {% if settings.heading_divider_animation != "none" %}
+                    data-scroll-class="{{ settings.heading_divider_animation }}"
+                  {% endif %}>
+            </div>
+          {% endif %}
+      </div>
+    </div>
+  </section>
+
+
+{% schema %}
+  {
+    "name": "Title",
+    "class": "heading-section",
+    "settings": [
+    {
+      "type": "header",
+      "content": "About this Section",
+      "info": "This section takes the title of the page, whether it's a page, product or collection, and displays it as the page's H1.  Or you can replace the text below."
+    },
+      {
+        "type": "text",
+        "id": "title",
+        "label": "Heading"
+      },
+      {
+        "type": "header",
+        "content": "Color Block"
+      },
+      {
+        "type": "color",
+        "id": "background",
+        "label": "Background",
+        "default": "rgba(0,0,0,0)"
+      },
+      {
+        "type": "checkbox",
+        "id": "hide-divider",
+        "label": "Hide Divider",
+        "default": true,
+        "info": "Use to override theme-level setting"
+      },
+      {
+        "type": "range",
+        "id": "desktop-min",
+        "label": "Minimum Height Desktop",
+        "min": 0,
+        "max": 600,
+        "step": 10,
+        "default": 300,
+        "unit": "px"
+      },
+      {
+        "type": "range",
+        "id": "mobile-min",
+        "label": "Minimum Height Mobile",
+        "min": 0,
+        "max": 600,
+        "step": 10,
+        "default": 400,
+        "unit": "px"
+      },
+      {
+        "type": "header",
+        "content": "Layout"
+      },
+      {
+        "type": "select",
+        "id": "heading_alignment",
+        "label": "Text alignment",
+        "options": [
+          {
+            "value": "start",
+            "label": "Left"
+          },
+          {
+            "value": "center",
+            "label": "Center"
+          },
+          {
+            "value": "end",
+            "label": "Right"
+          }
+        ],
+        "default": "center"
+      },
+      {
+        "type": "select",
+        "id": "vertical_spacing",
+        "label": "Vertical spacing",
+        "options": [
+          {
+            "value": "small",
+            "label": "Small"
+          },
+          {
+            "value": "medium",
+            "label": "Medium"
+          },
+          {
+            "value": "large",
+            "label": "Large"
+          }
+        ],
+        "default": "small"
+      },
+      {
+        "type": "select",
+        "id": "width",
+        "label": "Width",
+        "default": "wide",
+        "options": [
+          {
+            "value": "half",
+            "label": "Half"
+          },
+          {
+            "value": "standard",
+            "label": "Standard"
+          },
+          {
+            "value": "wide",
+            "label": "Wide"
+          }
+        ]
+      },
+      {
+        "type": "range",
+        "id": "padding_top",
+        "label": "Top spacing",
+        "min": 0,
+        "max": 80,
+        "default": 0,
+        "unit": "px"
+      },
+      {
+        "type": "range",
+        "id": "padding_bottom",
+        "label": "Bottom spacing",
+        "min": 0,
+        "max": 80,
+        "default": 20,
+        "unit": "px"
+      },
+      {
+        "type": "range",
+        "id": "padding_left",
+        "label": "Left spacing",
+        "min": 0,
+        "max": 80,
+        "default": 0,
+        "unit": "px"
+      },
+      {
+        "type": "range",
+        "id": "padding_right",
+        "label": "Right spacing",
+        "default": 0,
+        "min": 0,
+        "max": 80,
+        "unit": "px"
+      },
+      {
+        "type": "select",
+        "id": "animation",
+        "label": "Animation",
+        "default": "none",
+        "options": [
+          {
+            "value": "none",
+            "label": "None"
+          },
+          {
+            "value": "fadeIn",
+            "label": "Fade in"
+          },
+          {
+            "value": "fadeInDown",
+            "label": "Fade in down"
+          },
+          {
+            "value": "fadeInLeft",
+            "label": "Fade in left"
+          },
+          {
+            "value": "fadeInRight",
+            "label": "Fade in right"
+          },
+          {
+            "value": "slideInLeft",
+            "label": "Slide in left"
+          },
+          {
+            "value": "slideInRight",
+            "label": "Slide in right"
+          },
+          {
+            "value": "zoomIn",
+            "label": "Zoom in"
+          }
+        ]
+      },
+      {
+        "type": "header",
+        "content": "Advanced"
+      },
+      {
+        "type": "paragraph",
+        "content": "[Learn more](https://help.outofthesandbox.com/hc/en-us/articles/360022329373)"
+      },
+      {
+        "type": "text",
+        "id": "css_class",
+        "label": "CSS Class"
+      },
+      {
+        "type": "textarea",
+        "id": "custom_css",
+        "label": "Custom CSS"
+      }
+    ],
+    "presets": [
+      {
+        "name": "Title",
+        "category": "Layout",
+        "settings": {
+
+        }
+      }
+    ]
+  }
+{% endschema %}
